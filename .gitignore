@@ -6,7 +6,7 @@ dist/
 .astro/
 .netlify/
 
-# Secrets (keep .env.example)
+# Secrets (keep .env.example and remote.env.example)
 .env
 .env.*
 !.env.example

@@ -14,7 +14,7 @@ This repository contains **no app code**. It holds the specifications, the plan,
 | [STACK.md](STACK.md) | The technology, and the rules every feature follows |
 | [CLAUDE.md](CLAUDE.md) | The agent's instructions: how it runs a phase, what it may do without asking, and what waits for your go-ahead |
 | `scripts/preflight.mjs` | A check that every account, key, and link is in place. It changes nothing and prints no secret |
-| `.env.example` | The names of the settings you fill in. No values |
+| `.env.example`, `remote.env.example` | Templates for the two settings files you fill in. No values |
 
 ## How to begin
 

@@ -67,7 +67,7 @@ const remote = readEnv('remote.env');
 section('Files');
 if (!env) fail('.env exists', 'Create .env in the project folder (see .env.example).');
 else pass('.env exists');
-if (!remote) fail('remote.env exists', 'Create remote.env (see .env.example).');
+if (!remote) fail('remote.env exists', 'Create remote.env in the project folder (see remote.env.example).');
 else pass('remote.env exists');
 
 const local = env ?? {};

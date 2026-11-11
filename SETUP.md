@@ -53,7 +53,7 @@ Both are already listed in `.gitignore`. Do not paste their contents into a chat
 - `ALLOWED_CLERK_USER_IDS`: your Clerk user ID
 - `AI_API_KEY`: the Mistral key
 
-`remote.env`: a new file with one line.
+`remote.env`: copy `remote.env.example` to `remote.env` and fill in the value.
 
 - `PRODUCTION_DATABASE_URL`: the `production` connection string
 
