@@ -1,0 +1,26 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+.astro/
+.netlify/
+
+# Secrets (keep .env.example)
+.env
+.env.*
+!.env.example
+remote.env
+
+# OS and editor files
+.DS_Store
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# Copies made by a file-sync service (for example "schema 2.ts")
+* 2
+* 2.*
+.astro-dev.log
