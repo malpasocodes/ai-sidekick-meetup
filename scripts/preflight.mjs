@@ -1,14 +1,16 @@
-// Preflight: proves that every account, key, and link the build needs is in
-// place, before any work starts. Run with:  node scripts/preflight.mjs
+// Preflight: proves that every tool, account, key, and link the build needs
+// is in place, before any work starts. Run with:  node scripts/preflight.mjs
 //
 // It needs no installed packages, prints no secret, and changes nothing.
 // Exit code 0 means every check passed.
 
 import { execFileSync } from 'node:child_process';
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync, realpathSync } from 'node:fs';
+import net from 'node:net';
 
 const MODEL = 'mistral-small-2603';
 const REGION = 'us-east-1';
+const PORT = 4321;
 const NETLIFY_VARIABLES = {
   // name: the deploy contexts that must have a value
   DATABASE_URL: ['production'],
@@ -24,6 +26,8 @@ const fail = (what, fix) => {
   failures += 1;
   console.log(`  FAIL  ${what}\n        -> ${fix}`);
 };
+const note = (what) => console.log(`  note  ${what}`);
+const skip = (what) => console.log(`  --    skipped: ${what}`);
 const section = (name) => console.log(`\n${name}`);
 
 /** Reads NAME=value lines from a file. Returns {} when the file is missing. */
@@ -60,6 +64,55 @@ async function query(connectionString, sql) {
   return (await response.json()).rows;
 }
 
+// ---------------------------------------------------------------- tools
+section('Tools');
+const pinned = existsSync('.nvmrc') ? readFileSync('.nvmrc', 'utf8').trim().replace(/^v/, '') : '';
+const wantedMajor = Number(pinned.split('.')[0]);
+const nodeMajor = Number(process.versions.node.split('.')[0]);
+if (!wantedMajor) fail('.nvmrc names the Node version', 'The file .nvmrc is missing or empty. Restore it from the repository.');
+else if (nodeMajor === wantedMajor) pass(`Node is version ${wantedMajor} (this is ${process.versions.node})`);
+else fail(`Node is version ${wantedMajor}`, `This is Node ${process.versions.node}. Install Node ${pinned}. With nvm: nvm install, then nvm use.`);
+if (nodeMajor < 18) {
+  console.log('\nThe other checks need Node 18 or later. Install the right Node and run the preflight again.');
+  process.exit(1);
+}
+
+const hasGit = run('git', ['--version']) !== null;
+if (hasGit) pass('Git is installed');
+else fail('Git is installed', 'Install Git, then run the preflight again.');
+
+const hasGh = run('gh', ['--version']) !== null;
+if (hasGh) pass('the GitHub tool (gh) is installed');
+else fail('the GitHub tool (gh) is installed', 'Install it from https://cli.github.com, then run: gh auth login');
+
+const netlify = (args) => run('npx', ['--no-install', 'netlify', ...args]) ?? run('netlify', args);
+const hasNetlify = netlify(['--version']) !== null;
+if (hasNetlify) pass('the Netlify tool is installed');
+else fail('the Netlify tool is installed', 'Run: npm install -g netlify-cli   and then: netlify login');
+
+/** True when something accepts a connection on the app's local address. */
+const answersOn = (host) =>
+  new Promise((resolve) => {
+    const socket = net.connect({ host, port: PORT });
+    const done = (value) => {
+      socket.destroy();
+      resolve(value);
+    };
+    socket.setTimeout(1000, () => done(false));
+    socket.once('connect', () => done(true));
+    socket.once('error', () => done(false));
+  });
+if (!(await Promise.all(['127.0.0.1', '::1'].map(answersOn))).some(Boolean)) {
+  pass(`http://localhost:${PORT} is free`);
+} else {
+  // Something is listening. This project's own app is fine; another project's is not.
+  const pid = run('lsof', ['-nP', `-iTCP:${PORT}`, '-sTCP:LISTEN', '-Fp'])?.match(/^p(\d+)$/m)?.[1];
+  const folder = pid ? run('lsof', ['-a', '-p', pid, '-d', 'cwd', '-Fn'])?.match(/^n(.+)$/m)?.[1] : null;
+  if (folder && folder === realpathSync(process.cwd())) pass(`http://localhost:${PORT} is in use by this project's own app`);
+  else if (folder) fail(`http://localhost:${PORT} is free`, `An app started from ${folder} is using it. Stop that app (in that folder: npm run stop).`);
+  else note(`http://localhost:${PORT} is in use, and the preflight could not tell by what. If it is not this project's app, stop it.`);
+}
+
 const env = readEnv('.env');
 const remote = readEnv('remote.env');
 
@@ -87,7 +140,8 @@ for (const name of ['PRODUCTION_DATABASE_URL']) {
   else fail(`remote.env has ${name}`, `Add a value for ${name} to remote.env.`);
 }
 for (const file of ['.env', 'remote.env']) {
-  if (run('git', ['check-ignore', '-q', file]) !== null) pass(`${file} is ignored by Git`);
+  if (!hasGit) skip(`${file} is ignored by Git (needs Git, see Tools)`);
+  else if (run('git', ['check-ignore', '-q', file]) !== null) pass(`${file} is ignored by Git`);
   else fail(`${file} is ignored by Git`, `Add ${file} to .gitignore before doing anything else.`);
 }
 
@@ -159,16 +213,18 @@ if (local.AI_API_KEY) {
 
 // --------------------------------------------------------------- GitHub
 section('GitHub');
-if (run('gh', ['auth', 'status']) !== null) pass('gh is signed in');
-else fail('gh is signed in', 'Run: gh auth login');
-const origin = run('git', ['remote', 'get-url', 'origin'])?.trim();
+const origin = hasGit ? run('git', ['remote', 'get-url', 'origin'])?.trim() : null;
 const repo = origin?.match(/github\.com[:/](.+?)(?:\.git)?$/)?.[1];
-if (repo && run('gh', ['repo', 'view', repo, '--json', 'name']) !== null) pass(`the repository ${repo} is reachable`);
-else fail('the repository is reachable', 'This folder needs a GitHub remote named origin that gh can open.');
+if (!hasGh) skip('these checks need the GitHub tool (see Tools)');
+else {
+  if (run('gh', ['auth', 'status']) !== null) pass('gh is signed in');
+  else fail('gh is signed in', 'Run: gh auth login');
+  if (repo && run('gh', ['repo', 'view', repo, '--json', 'name']) !== null) pass(`the repository ${repo} is reachable`);
+  else fail('the repository is reachable', 'This folder needs a GitHub remote named origin that gh can open.');
+}
 
 // -------------------------------------------------------------- Netlify
 section('Netlify');
-const netlify = (args) => run('npx', ['--no-install', 'netlify', ...args]) ?? run('netlify', args);
 const api = (method, data) => {
   const output = netlify(['api', method, '--data', JSON.stringify(data)]);
   try {
@@ -180,7 +236,8 @@ const api = (method, data) => {
 const siteId = existsSync('.netlify/state.json')
   ? JSON.parse(readFileSync('.netlify/state.json', 'utf8')).siteId
   : null;
-if (!siteId) fail('this folder is linked to the Netlify site', 'Run: netlify link');
+if (!hasNetlify) skip('these checks need the Netlify tool (see Tools)');
+else if (!siteId) fail('this folder is linked to the Netlify site', 'Run: netlify link');
 else {
   const site = api('getSite', { site_id: siteId });
   if (!site) fail('the Netlify tool is signed in', 'Run: netlify login');
