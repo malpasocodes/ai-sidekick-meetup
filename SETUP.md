@@ -21,7 +21,14 @@ Nothing else should be using the address `http://localhost:4321`. An app left ru
 - On GitHub, press **Use this template** and create a repository under your own account. Private is fine.
 - Download it: `gh repo clone <your-account>/<your-repository>`, and open that folder.
 
-When you are done: the folder's `origin` is your repository, not the template.
+If you cloned the starter kit directly instead, the folder still points at the starter kit. Point it at a new repository of your own, from inside the folder:
+
+```
+git remote remove origin
+gh repo create <your-repository> --private --source . --remote origin --push
+```
+
+When you are done: the folder's `origin` is your repository, not the starter kit. The preflight checks this, because the agent pushes the app to `origin`.
 
 ## 3. Neon (the database)
 

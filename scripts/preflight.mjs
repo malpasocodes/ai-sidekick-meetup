@@ -219,8 +219,21 @@ if (!hasGh) skip('these checks need the GitHub tool (see Tools)');
 else {
   if (run('gh', ['auth', 'status']) !== null) pass('gh is signed in');
   else fail('gh is signed in', 'Run: gh auth login');
-  if (repo && run('gh', ['repo', 'view', repo, '--json', 'name']) !== null) pass(`the repository ${repo} is reachable`);
-  else fail('the repository is reachable', 'This folder needs a GitHub remote named origin that gh can open.');
+  let details = null;
+  try {
+    details = JSON.parse(run('gh', ['repo', 'view', repo ?? '', '--json', 'isTemplate,viewerPermission']) ?? 'null');
+  } catch {
+    details = null;
+  }
+  if (!repo || !details) fail('the repository is reachable', 'This folder needs a GitHub remote named origin that gh can open.');
+  else {
+    pass(`the repository ${repo} is reachable`);
+    // The build is pushed to origin, so origin must be the owner's own copy.
+    const makeYourOwn = 'Make your own copy. Run: git remote remove origin   and then: gh repo create <a-name> --private --source . --remote origin --push';
+    if (details.isTemplate) fail('the repository is your own copy', `${repo} is the starter kit itself, and the app must not be pushed there. ${makeYourOwn}`);
+    else if (!['ADMIN', 'MAINTAIN', 'WRITE'].includes(details.viewerPermission)) fail('the repository is your own copy', `You can read ${repo} but cannot push to it. ${makeYourOwn}`);
+    else pass('the repository is your own copy, and you can push to it');
+  }
 }
 
 // -------------------------------------------------------------- Netlify
