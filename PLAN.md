@@ -26,7 +26,7 @@ Five phases, built on `main`. Each ends with a gate where the owner looks at the
 
 **Build**
 
-- The project: Astro with the Netlify adapter, React, Tailwind, shadcn/ui, Vitest, pinned as STACK.md lists. `netlify.toml` with build command `npm run check`.
+- The project: Astro with the Netlify adapter, React, Tailwind, shadcn/ui, Vitest, pinned as STACK.md lists. `netlify.toml` with build command `npm run check` and publish folder `dist` (STACK.md, "Environments").
 - Design tokens and the shell: sidebar, navigation, and a placeholder page for each of Today, Calendar, ToDos, Projects, Logbook, Settings.
 - Drizzle, the `users` table, PGlite test setup, and `npm run db` with `migrate` and `status` for the two targets.
 - Sign-in, the allowlist, the current-user helper, the sign-in and access-denied pages, the account and **Sign out** in the sidebar.
@@ -46,7 +46,7 @@ Five phases, built on `main`. Each ends with a gate where the owner looks at the
 - Projects, ToDos, and events end to end: tables, schemas, operations, endpoints, pages, forms.
 - The demo data script. Add the demo records to `dev` before the gate, so the owner sees filled pages.
 
-**Look at:** the Projects, ToDos, and Calendar pages with the demo records; create, edit, and delete one ToDo; Settings shows your time zone.
+**Look at:** on the live address, sign in and see the Phase 1 shell (the first signed-in look at the live site). Then, locally: the Projects, ToDos, and Calendar pages with the demo records; create, edit, and delete one ToDo; Settings shows your time zone.
 
 **Deferred to Phase 3:** TODO-10, and the logbook parts of the Projects page (LOG-10). Where PRJ-1, PRJ-7, and EVT-1 mention the Today card, test the page here; the card is covered in Phase 3.
 
@@ -104,4 +104,4 @@ Five phases, built on `main`. Each ends with a gate where the owner looks at the
 
 **Not in this phase:** new record types, scheduled generation.
 
-**After this phase:** the build is complete. Further changes follow the same loop: build, gate, go-ahead, push.
+**After this phase:** the build is complete. Tell the owner that the demo records keep the dates of the day they were added, so `npm run demo -- add <dev|production>` is worth running again on the day of a demonstration. Further changes follow the same loop: build, gate, go-ahead, push.

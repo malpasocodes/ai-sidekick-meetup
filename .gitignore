@@ -24,3 +24,4 @@ remote.env
 * 2
 * 2.*
 .astro-dev.log
+.astro-dev.pid

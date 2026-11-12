@@ -35,7 +35,7 @@ Nothing else without a reason stated in the gate report. Not used: streaming, mo
 | Who may sign in | the owner | the owner |
 | AI | real | real |
 
-Pushing `main` publishes to production. A failed build is never published, because Netlify's build command is `npm run check`. The database and Netlify's functions are in the same region, `us-east-1`. There is no custom domain and no Clerk production instance.
+Pushing `main` publishes to production. A failed build is never published, because Netlify's build command is `npm run check`. `netlify.toml` names both that command and the folder to publish, `dist`, where Astro writes the browser's files (scripts, styles, fonts). The Netlify site is created before the app exists, so Netlify can detect neither. The database and Netlify's functions are in the same region, `us-east-1`. There is no custom domain and no Clerk production instance.
 
 ### Variables
 

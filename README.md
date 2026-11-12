@@ -14,6 +14,7 @@ This repository contains **no app code**. It holds the specifications, the plan,
 | [STACK.md](STACK.md) | The technology, and the rules every feature follows |
 | [CLAUDE.md](CLAUDE.md) | The agent's instructions: how it runs a phase, what it may do without asking, and what waits for your go-ahead |
 | `scripts/preflight.mjs` | A check that every tool, account, key, and link is in place. It changes nothing and prints no secret |
+| `scripts/live-check.mjs` | A check the agent runs after each phase goes live: that Netlify published it, and that the live site serves the app and the files its pages load. It changes nothing and prints no secret |
 | `.env.example`, `remote.env.example` | Templates for the two settings files you fill in. No values |
 
 ## How to begin
@@ -34,7 +35,7 @@ At the end of each phase the agent gives you a short report and stops. Look at t
 - **It has been run on a Mac only.** Windows and Linux are untested.
 - **Package versions are pinned as of November 2026** (see `STACK.md`). Later versions may behave differently.
 - **Your build will differ from anyone else's.** The agent decides the details the specs leave open, and lists them for you at each gate under "Departures".
-- **AI answers vary from run to run.** In the build this kit came from, the Morning Briefing was accurate every time; the Daily Plan sometimes listed items in the wrong order.
+- **AI answers vary from run to run.** In the builds so far, the Morning Briefing has been accurate, apart from once counting an overdue ToDo as due today. The Daily Plan has at times listed items in the wrong order, linked records that have nothing to do with each other, or left out a ToDo that was due today.
 - **Your accounts and keys are your responsibility.** The agent is told to push, and to change the production database, only on your go-ahead, and never to read or show your keys. Read `CLAUDE.md` ("Permissions") so you know what you are approving.
 - **Timing.** The build this kit came from took about 50 minutes, with every account already in place and Claude Code allowed to run routine commands without prompting. Setup takes longer the first time.
 - **Provided as is, with no support.** See [LICENSE](LICENSE).

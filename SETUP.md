@@ -67,6 +67,7 @@ Both are already listed in `.gitignore`. Do not paste their contents into a chat
 ## 7. Netlify (the live site)
 
 - Create a site from your GitHub repository (step 2), publishing from the branch `main`.
+- Leave the site's build command and publish folder empty. The agent sets both in Phase 1, in a file in the repository.
 - Set the site's functions region to `us-east-1`.
 - Set these variables on the site, for production: `DATABASE_URL` (the **`production`** connection string, not the `dev` one), `PUBLIC_CLERK_PUBLISHABLE_KEY`, `CLERK_SECRET_KEY`, `ALLOWED_CLERK_USER_IDS`, `AI_API_KEY`.
 - Link this folder to the site: run `netlify link` in the folder.
