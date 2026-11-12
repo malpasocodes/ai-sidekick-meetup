@@ -32,7 +32,7 @@ One configuration file holds this table and the default daily limit (20).
 2. **Take a slot.** Insert a usage row with the next `slot` for this user and date, in one statement that inserts only if the user's rows for the date number fewer than the limit. A unique index on `(user_id, usage_date, slot)` means two requests arriving together cannot take the same slot: on a unique violation, try again. No row inserted means `limit_reached`, and the provider is not called. (A conditional insert without the slot is not safe when requests arrive together.)
 3. **Call the provider** with the model, the output cap, and an abort signal of the adapter's own, raced against the deadline and the request's signal.
 4. **Check the answer** against the schema. A refusal (an empty answer, or one that is not JSON), an answer cut off at the cap, or a mismatch is `invalid_output`. `null` for an optional field counts as absent.
-5. **Finish the row** with the status and the token counts, whatever happened. `invalid_output` is recorded as `failed`.
+5. **Finish the row** with the status and the token counts, whatever happened. `invalid_output` is recorded as `failed`. A timed-out or cancelled call has no token counts, because the provider reported none: both stay empty.
 
 When an answer passes the schema but a feature's own check then rejects it (an invented time, an unknown reference), the row stays `completed`, because the call was made and paid for. The endpoint answers `failed`.
 

@@ -20,6 +20,7 @@ Dated entries written in Markdown, each optionally tied to a project. Several en
 - **Order.** Newest `entry_date` first, then newest `created_at` first.
 - **Saving** happens only on **Create** or **Save**. Nothing is saved automatically. Leaving the form with unsaved text brings up the browser's own "leave this page?" warning.
 - A date that is not a real calendar date answers 400 with "Choose a valid date."; a future one with "The date cannot be later than today."
+- A body that is empty, or only spaces and line breaks, answers 400 with "Enter an entry." The text area's accessible name is "Entry".
 - A `project_id` that is another user's, or does not exist, answers the same 400: "Choose a valid project."
 
 ## Formatted text
@@ -100,6 +101,8 @@ Markdown: **bold**, *italic*, # headings, lists, `code`, tables, links.
 **Entry page** (`/logbook/entries/<id>`): a "Logbook" link back, the date as the title (`Tuesday, November 10`, with the year added when it is not this year), the project tag, the formatted body, and **Edit** and **Delete**. Delete asks "Delete this entry?" and then returns to the Logbook page. An ID that does not exist, or is another user's, goes to the Logbook page.
 
 **Day view** (`/logbook/day/<date>`): a "Logbook" link back, the date as the title, that day's entries in full, each with its project tag and an **Edit** link, and **New entry**. From Phase 5, that day's saved Daily Plan follows, read-only, when there is one (daily-plan.md). A future or invalid date goes to the Logbook page.
+
+The entry page and the day view are built on the server with their content in place, so they have no loading state. Only **Delete** needs the browser.
 
 **On the Projects page:** each row's counts include the project's entries ("3 ToDos · 1 event · 4 entries"), and the form of an existing project has a link, **View logbook entries**, to `/logbook?project=<id>`.
 

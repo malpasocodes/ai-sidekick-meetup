@@ -13,7 +13,8 @@ A small, fixed set of records for the owner's account, so the screens and the AI
 - A demo record stays a demo record when the owner edits it: `remove` deletes it, and `add` puts it back as listed here. Both commands say so in what they print.
 - `production` is used only when the owner asks for it.
 - `add` is safe to run twice.
-- If the account has no time zone yet, `add` sets `America/New_York`. If it has no user row yet, `add` creates one.
+- If the account has no time zone yet, `add` sets the zone of the computer it runs on (`Intl.DateTimeFormat().resolvedOptions().timeZone`), which is the owner's. The script usually runs before the owner's browser first visits, so this takes the place of detection (settings.md). `add` prints the zone the dates are worked out in. The function behind `add` takes that zone as an input, so tests can fix it.
+- If the account has no user row yet, `add` creates one.
 - If the account already has its own project named like a demo project, `add` stops with a plain message and creates nothing.
 - The logbook entries join the set in Phase 3, when their table exists.
 - Run on a later day, `add` moves the demo records to that day's relative dates.
@@ -46,7 +47,7 @@ A small, fixed set of records for the owner's account, so the screens and the AI
 | Launchpad check-in | today 14:00–15:00 | Launchpad |
 | Design review | tomorrow 09:30–10:15 | Launchpad |
 
-**Logbook entries,** each created on its own date:
+**Logbook entries,** each created on its own date, at a time of day in the account's zone and never later than now: "Pricing survey drafted" at 17:00, "Two customer calls" at 18:00, "Onboarding sketch" at 17:00, "Rehearsal room" at 08:00. That lists "Two customer calls" above "Onboarding sketch", as the Logbook sketch shows.
 
 Two days ago, Customer research:
 

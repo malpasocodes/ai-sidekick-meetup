@@ -27,11 +27,15 @@ Ask the model for one flat item shape (`kind`, `ref`, `title`, `projectRef`, `no
 
 The instructions ask for:
 
-- events in time order with ToDos placed around them, and a ToDo that prepares for an event (same project, or a logbook entry links them) placed before that event;
-- no ToDo or event twice, and no suggestion that repeats or rephrases an existing ToDo;
+- events in time order with ToDos placed around them, and a ToDo that prepares for an event placed before that event. "Prepares for" means the same project, or a logbook entry that links the two; records the data does not link are never linked;
+- every ToDo that is overdue or due today, as far as eight items allow;
+- tomorrow's events last, and only when a ToDo today prepares for them;
+- no ToDo or event twice, and no suggestion that repeats or rephrases an existing ToDo: one that shares its subject with an open ToDo is left out, and no suggestion is better than a weak one;
 - no durations or times the records do not contain, and no words that guess one ("quick", "brief");
-- a focus that names only what the records hold;
-- a note only when it gives a reason from another record (an event, or a logbook entry), never the item's own title, priority, or due date; no note on an event.
+- a focus that is one sentence on the one thing that matters most today, not a list of projects or ToDos; it names only what the records hold, and none of tomorrow's events;
+- a note only when it gives a reason from another record (an event, or a logbook entry), never the item's own title, priority, or due date; on a ToDo that prepares for an event, the note names that event by its title; no note on an event.
+
+State each of these as a rule. Do not illustrate one with an example sentence that names a record: in a real run the model copied the example onto two unrelated ToDos.
 
 ### A good plan for the demo data
 
@@ -40,6 +44,7 @@ Used in Phase 5 to judge real answers:
 - "Review customer interview notes" comes before the 10:00 Customer conversation.
 - "Sketch the onboarding flow" comes before the 14:00 Launchpad check-in.
 - Both of today's events appear, in time order.
+- Every ToDo that is overdue or due today appears, "Book a room for the rehearsal" included.
 - Every note names an event or something a logbook entry says.
 - The focus mentions one conversation, not several.
 
@@ -48,7 +53,7 @@ Used in Phase 5 to judge real answers:
 - Every `ref` and `projectRef` must be one that was sent, and its record must still exist and belong to the user. **One bad reference rejects the whole draft** (`failed`).
 - An item of the wrong shape for its kind (a suggestion with no title, a ToDo with no `ref`) rejects the whole draft.
 - A ToDo or event listed a second time is dropped, keeping the first. A suggestion whose title equals an open ToDo's title, ignoring case and spacing, is dropped. A suggestion that only rephrases a ToDo cannot be caught here; the instructions must prevent it. If nothing is left after the drops, the draft is rejected (`failed`). The instructions also forbid words that guess a duration ("quick", "quickly", "brief"); real answers used them in two of three runs, so name the words.
-- A note on an event that has nothing left once clock times and words such as "at", "from", and "starts" are removed is dropped.
+- A note on an event that has nothing left once clock times and words such as "at", "from", "to", "until", and "starts" are removed is dropped.
 - The draft the browser receives is built from the server's records: titles, times, priorities, due dates, and projects never come from the model.
 - **Save** takes `{ focus, items }`, each item as `{ kind, id }` or `{ kind: "suggestion", title, projectId }`, with an optional `note`. It accepts today's date only (otherwise 400: "A plan can be saved for today only."), needs a focus ("Enter a focus.") and one to eight items ("A plan needs at least one item."), checks every reference again, and stores each item with its title as it is at that moment. It replaces any plan already saved for today.
 

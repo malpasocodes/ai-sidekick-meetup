@@ -29,6 +29,8 @@ headline: text, 1–160 characters
 carriedOver?: text, up to 200 characters
 ```
 
+The instructions ask for a headline that counts overdue ToDos and ToDos due today separately. An overdue ToDo is not "due today": a real answer described one overdue and two due today as "3 ToDos due today".
+
 ## Server checks
 
 - **Invented times reject the answer.** If either sentence contains a clock time (such as "10:00", "9am", or "2 pm") that appears nowhere in what was sent, the answer is rejected (`failed`) and nothing is stored. A time counts as sent when it matches an event's start or end time in either 24-hour or 12-hour form ("2:00" and "2pm" both match 14:00), or appears in an entry that was sent. Words such as "noon" are not checked.

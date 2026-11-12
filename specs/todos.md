@@ -27,7 +27,7 @@ Work the user needs to do. Completing a ToDo is not part of this build: there is
 
 | Operation | Endpoint |
 |---|---|
-| List | `GET /api/todos` |
+| List | `GET /api/todos`: the ToDos, and `today` (the user's current date), which the page needs for "Due today" and "Overdue" |
 | Create | `POST /api/todos` |
 | Update | `PATCH /api/todos/:id` |
 | Delete | `DELETE /api/todos/:id` |

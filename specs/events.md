@@ -29,7 +29,7 @@ Scheduled commitments with a start time. No all-day or recurring events, no remi
 
 | Operation | Endpoint |
 |---|---|
-| List a range | `GET /api/events?from=<date>&to=<date>` (both dates included, in the user's time zone; at most 62 days, otherwise 400) |
+| List a range | `GET /api/events?from=<date>&to=<date>` (both dates included, in the user's time zone; at most 62 days, otherwise 400): the events, `today`, and the user's time zone, which the pages need to mark today's row |
 | Create | `POST /api/events` |
 | Update | `PATCH /api/events/:id` |
 | Delete | `DELETE /api/events/:id` |
@@ -59,7 +59,7 @@ Wed, Nov 11     09:30–10:15   ● Design review
 ...
 ```
 
-Today's row is marked. A row opens the form in a dialog, with **Delete** inside it.
+Today's row is marked. A row opens the form in a dialog, with **Delete** inside it. An event that ends the next day shows its times as they are, `23:00–01:00`, with "next day" added for screen readers.
 
 **Form:**
 
